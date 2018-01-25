@@ -53,11 +53,14 @@ def class_name_to_int(class_name: str) -> int:
         raise ValueError("class_name can't be {}!".format(class_name))
 
 
-def create_tf_record(image_name: str, encode_image: ndarray, annotation: Annotation) -> Any:
+def create_tf_record(image_name: str, image_filename: str, annotation: Annotation) -> Any:
     height = annotation.height  # Image height
     width = annotation.width  # Image width
     filename = image_name.encode()  # Filename of the image. Empty if image is not from file
-    encoded_image_data = encode_image.tobytes()  # Encoded image bytes
+
+    with open(image_filename, "rb") as image_file:
+        encoded_image_data = image_file.read() # Encoded image bytes
+
     image_format = b"jpeg"  # b'jpeg' or b'png'
 
     xmins = []  # List of normalized left x coordinates in bounding box (1 per box)
@@ -115,12 +118,12 @@ def read_annotation_xml_file(img_file: str) -> Annotation:
             annotation_object.find("name").get_text()
             boxes.append(
                 BoundingBox(
-                    annotation_object.find("name").get_text(),
-                    int(annotation_object.find("xmin").get_text()),
-                    int(annotation_object.find("xmax").get_text()),
-                    int(annotation_object.find("ymin").get_text()),
-                    int(annotation_object.find("ymax").get_text()),
-                    True, width, height))
+                    name=annotation_object.find("name").get_text(),
+                    left=int(annotation_object.find("xmin").get_text()),
+                    right=int(annotation_object.find("xmax").get_text()),
+                    top=int(annotation_object.find("ymin").get_text()),
+                    bottom=int(annotation_object.find("ymax").get_text()),
+                    normalize_values=True, normalize_x=width, normalize_y=height))
     else: # default annotation
         width = 256
         height = 256
@@ -133,13 +136,13 @@ def read_annotation_xml_file(img_file: str) -> Annotation:
 def main(_):
     writer = tf.python_io.TFRecordWriter(os.path.join(FLAGS.output_path, FLAGS.output_file))
 
-    image_path = path.normpath(FLAGS.image_path) + "/"
+    image_path = os.path.join(".", path.normpath(FLAGS.image_path)) + "/"
     for root, dirs, filenames in os.walk(image_path):
         for file in filenames:
             full_filename = path.join(root, file).replace(image_path, "", 1)
             annotation = read_annotation_xml_file(full_filename)
-            encoded_image: ndarray = cv2.imread(path.join(root, file))
-            writer.write(create_tf_record(file, encoded_image, annotation).SerializeToString())
+
+            writer.write(create_tf_record(file, path.join(root, file), annotation).SerializeToString())
 
     writer.close()
 

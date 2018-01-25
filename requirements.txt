@@ -1,5 +1,10 @@
+docopt
 beautifulsoup4
 opencv-python
 numpy
 tensorflow
 lxml
+pillow
+lxml
+jupyter
+matplotlib

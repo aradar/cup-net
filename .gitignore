@@ -1,5 +1,5 @@
 .idea/
-images/
-models/
+raw_data/
+tf-models-repo/
 
 *.tfrecord

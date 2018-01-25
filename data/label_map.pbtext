@@ -1,0 +1,9 @@
+item {
+  id: 1
+  name: 'YELLOW_CUP'
+}
+
+item {
+  id: 2
+  name: 'BLUE_CUP'
+}
