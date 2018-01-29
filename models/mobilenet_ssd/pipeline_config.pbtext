@@ -174,10 +174,10 @@ train_input_reader: {
 }
 
 eval_config: {
-  num_examples: 8000
+  num_examples: 100
   # Note: The below line limits the evaluation process to 10 evaluations.
   # Remove the below line to evaluate indefinitely.
-  max_evals: 10
+  max_evals: 100
 }
 
 eval_input_reader: {
@@ -185,7 +185,7 @@ eval_input_reader: {
     input_path: "../../data/eval.tfrecord"
   }
   label_map_path: "../../data/label_map.pbtext"
-  shuffle: false
+  shuffle: true
   num_readers: 1
-  num_epochs: 1
+  num_epochs: 10
 }
