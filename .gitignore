@@ -2,5 +2,6 @@
 raw_data/
 tf-models-repo/
 /cnn/__model_checkpoints__
+/cnn/CUP-data
 
 *.tfrecord
